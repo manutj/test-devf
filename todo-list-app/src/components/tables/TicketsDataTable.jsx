@@ -16,7 +16,7 @@ const TicketsDataTable = (props) => {
         return (
             <tr key={item.employee_id}>
                 <td>{item.name}</td>
-                <td style={{ background: "red" }}>
+                <td>
                     <div>{item.num_tickets}</div>
                 </td>
                 <td>

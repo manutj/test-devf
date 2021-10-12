@@ -1,39 +1,48 @@
 const { errors } = require("celebrate");
 const express = require("express");
-const path = require("path");
-const logger = require("morgan");
+const app = express();
 const cors = require("cors");
 const adminRouter = require("./routes/tickets");
 const validationSchema = require("./middlewares/middlewares");
+const dotenv = require("dotenv");
+const path = require("path");
+const Pool = require("pg").Pool;
 
-const app = express();
+const isProduction = process.env.NODE_ENV === "production";
 
-app.use(logger("dev"));
+dotenv.config();
+
+// Declaramos el puerto donde correra el servidor local
+const PORT = process.env.PORT || 3000;
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
 app.use(cors());
 
+const connectionString = `postgresql://${process.env.DB_USER}:${process.env.DB_PWD}@${process.env.DB_HOST}:${process.env.DB_PORT}/${process.env.DB}`;
+const pool = new Pool({
+    connectionString: isProduction
+        ? process.env.DATABASE_URL
+        : connectionString,
+    ssl: {
+        rechazarUnauthorized: false,
+    },
+});
+
 app.use("/api", validationSchema.login);
 app.use("/api", validationSchema.signup);
 app.use("/api/dashboard", adminRouter);
 
-// catch 404 and forward to error handler
-// app.use(function (req, res, next) {
-//     next(createError(404));
-// });
+app.use(express.static(path.join(__dirname, "/todo-list-app/build")));
 
-// // error handler
-// app.use(function (err, req, res, next) {
-//     // set locals, only providing error in development
-//     res.locals.message = err.message;
-//     res.locals.error = req.app.get("env") === "development" ? err : {};
+app.get("*", (req, res) => {
+    res.sendFile(path.join(__dirname, "/todo-list-app/build", "index.html"));
+});
 
-//     // render the error page
-//     res.status(err.status || 500);
-//     res.render("error");
-// });
+app.listen(PORT, () => {
+    console.log(`Aplicacion corriendo en el puerto ${PORT}`);
+});
 
 app.use(errors());
 
-module.exports = app;
+module.exports = pool;
