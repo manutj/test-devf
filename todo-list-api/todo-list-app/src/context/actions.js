@@ -16,7 +16,7 @@ export async function loginUser(dispatch, loginPayload) {
     try {
         dispatch({ type: "REQUEST_LOGIN" });
         let response = await fetch(
-            "http://localhost:3000/api/login",
+            "https://todo-fs.herokuapp.com/api/login",
             requestOptions
         );
         let data = await response.json();
@@ -42,7 +42,7 @@ export async function signupUser(loginPayload) {
 
     try {
         let response = await fetch(
-            "http://localhost:3000/api/signup",
+            "https://todo-fs.herokuapp.com/api/signup",
             requestOptions
         );
         let data = await response.json();

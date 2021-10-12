@@ -42,7 +42,7 @@ const AddEditTicketForm = (props) => {
 
     const submitFormAdd = (e) => {
         e.preventDefault();
-        fetch("http://localhost:3000/api/dashboard/new-ticket", {
+        fetch("https://todo-fs.herokuapp.com/api/dashboard/new-ticket", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
@@ -61,7 +61,7 @@ const AddEditTicketForm = (props) => {
         e.preventDefault();
         props.label == "Editar"
             ? fetch(
-                  `http://localhost:3000/api/dashboard/update-ticket/${ticket_id}`,
+                  `https://todo-fs.herokuapp.com/api/dashboard/update-ticket/${ticket_id}`,
                   {
                       method: "PATCH",
                       headers: {
@@ -76,7 +76,7 @@ const AddEditTicketForm = (props) => {
                   .catch((err) => console.log(err))
             : props.label == "Configurar"
             ? fetch(
-                  `http://localhost:3000/api/dashboard/change-ticket-status/${ticket_id}`,
+                  `https://todo-fs.herokuapp.com/api/dashboard/change-ticket-status/${ticket_id}`,
                   {
                       method: "PATCH",
                       headers: {
@@ -90,7 +90,7 @@ const AddEditTicketForm = (props) => {
                   .then((response) => response.json())
                   .catch((err) => console.log(err))
             : fetch(
-                  `http://localhost:3000/api/dashboard/delete-ticket/${ticket_id}`,
+                  `https://todo-fs.herokuapp.com/api/dashboard/delete-ticket/${ticket_id}`,
                   {
                       method: "DELETE",
                       headers: {

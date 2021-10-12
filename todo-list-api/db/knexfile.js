@@ -1,12 +1,15 @@
-require("dotenv").config();
+const dotenv = require("dotenv");
+dotenv.config();
 module.exports = {
     development: {
         client: "postgresql",
         connection: {
             searchPath: ["knex", "public"],
-            database: "todo",
-            user: "manu",
-            password: "123",
+            host: "fanny.db.elephantsql.com",
+            port: 5432,
+            database: "optzkopz",
+            user: "optzkopz",
+            password: "uidndlfF24A_abzOH6YgefYx5qIpcxHO",
         },
         pool: {
             min: 2,

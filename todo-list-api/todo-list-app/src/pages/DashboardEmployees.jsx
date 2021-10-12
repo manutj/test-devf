@@ -23,7 +23,7 @@ const DashboardEmployees = (props) => {
     };
 
     const getItems = () => {
-        fetch(`http://localhost:3000/api/dashboard/user-tickets/${id}`)
+        fetch(`https://todo-fs.herokuapp.com/api/dashboard/user-tickets/${id}`)
             .then((response) => response.json())
             .then((items) => setItems(items))
 

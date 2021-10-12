@@ -10,7 +10,7 @@ const DashboardAdmin = () => {
     const [items, setItems] = useState([]);
 
     const getItems = () => {
-        fetch("http://localhost:3000/api/dashboard")
+        fetch("https://todo-fs.herokuapp.com/api/dashboard")
             .then((response) => response.json())
             .then((items) => setItems(items))
 

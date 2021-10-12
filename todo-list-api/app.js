@@ -13,13 +13,12 @@ const isProduction = process.env.NODE_ENV === "production";
 dotenv.config();
 
 // Declaramos el puerto donde correra el servidor local
-const PORT = process.env.PORT || 3000;
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
 app.use(cors());
 
-const connectionString = `postgresql://${process.env.DB_USER}:${process.env.DB_PWD}@${process.env.DB_HOST}:${process.env.DB_PORT}/${process.env.DB}`;
+const connectionString = `postgres://optzkopz:uidndlfF24A_abzOH6YgefYx5qIpcxHO@fanny.db.elephantsql.com/optzkopz`;
 const pool = new Pool({
     connectionString: isProduction
         ? process.env.DATABASE_URL
@@ -39,10 +38,6 @@ app.get("*", (req, res) => {
     res.sendFile(path.join(__dirname, "/todo-list-app/build", "index.html"));
 });
 
-app.listen(PORT, () => {
-    console.log(`Aplicacion corriendo en el puerto ${PORT}`);
-});
-
 app.use(errors());
 
-module.exports = pool;
+module.exports = app;

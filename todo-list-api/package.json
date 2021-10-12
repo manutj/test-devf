@@ -2,11 +2,12 @@
     "name": "todo-list-api",
     "version": "0.0.0",
     "private": true,
+    "main": "app.js",
     "scripts": {
         "migrate": "npx knex migrate:latest --knexfile db/knexfile.js",
         "dev": "nodemon app.js",
-        "start:": "node app.js",
-        "heroku-postbuild": "cd frontend && cd dashboard && npm install && npm run build"
+        "start": "node ./bin/www",
+        "heroku-postbuild": "cd todo-list-app && npm install && npm run build"
     },
     "dependencies": {
         "bcrypt": "5.0.1",
