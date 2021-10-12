@@ -1,7 +1,4 @@
 //EN ESTE ARCHIVO DECLARAMOS LAS POSIBLES ACCIONES QUE PUEDE HACER UN USUARIO PARA ACTUALIZAR SU ESTADO EN LA APLICACION
-
-const ROOT_URL = "https://ecomerce-master.herokuapp.com/api/v1";
-
 //LA FUNCION LOGINUSER TIENE  UN OBJETO REQUESTOPTIONS CON LA CONFIGURACION PARA ENVIAR LOS DATOS DE INICIO DE SESION AL SERVIDOR
 
 export async function loginUser(dispatch, loginPayload) {
@@ -18,18 +15,40 @@ export async function loginUser(dispatch, loginPayload) {
     // LOGIN_ERROR: CAPTURA EL MENSAJE DE ERROR PARA MOSTRARLO AL USUARIO EN CASO DE QUE LOS DATOS INGRESADOS SEAN INCORRECTOS
     try {
         dispatch({ type: "REQUEST_LOGIN" });
-        let response = await fetch(`${ROOT_URL}/login`, requestOptions);
+        let response = await fetch(
+            "http://localhost:3000/api/login",
+            requestOptions
+        );
         let data = await response.json();
-
         if (data) {
             dispatch({ type: "LOGIN_SUCCESS", payload: data });
             localStorage.setItem("currentUser", JSON.stringify(data));
+            console.log("DATA USER", data);
             return data;
         }
         dispatch({ type: "LOGIN_ERROR", error: data.message });
         return;
     } catch (error) {
         dispatch({ type: "LOGIN_ERROR", error: error });
+    }
+}
+
+export async function signupUser(loginPayload) {
+    const requestOptions = {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(loginPayload),
+    };
+
+    try {
+        let response = await fetch(
+            "http://localhost:3000/api/signup",
+            requestOptions
+        );
+        let data = await response.json();
+        return data;
+    } catch (error) {
+        console.log(error);
     }
 }
 

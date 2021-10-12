@@ -1,19 +1,19 @@
-const UserService = require("../services/users");
-const UserDAO = require("../dao/users");
+const EmployeeService = require("../services/employee");
+const UserDAO = require("../dao/employee");
 
-class UserController {
-    async createUser(request, response) {
+class EmployeeController {
+    async createEmployee(request, response) {
         try {
-            const id = await UserService.createUser(request.body);
+            const id = await EmployeeService.createUser(request.body);
             response.status(201).json(id);
         } catch (error) {
             console.error(error);
             response.status(500).json(error);
         }
     }
-    async findUsers(request, response) {
+    async findEmployees(request, response) {
         try {
-            const items = await UserService.findUsers();
+            const items = await EmployeeService.findUsers();
             response.status(200).json(items);
         } catch (error) {
             response.status(500).json(error);
@@ -22,7 +22,7 @@ class UserController {
 
     async updateUser(request, response) {
         try {
-            const updateBody = await UserService.updateUser(
+            const updateBody = await EmployeeService.updateUser(
                 request.body,
                 request.params.id
             );
@@ -40,7 +40,7 @@ class UserController {
     async deleteUser(request, response) {
         const id = request.params.id;
         try {
-            const user = await UserService.findOneUser(id);
+            const user = await EmployeeService.findOneUser(id);
             if (!user) {
                 response.status(404).json({ message: "User not found" });
             } else {
@@ -60,4 +60,4 @@ class UserController {
     }
 }
 
-module.exports = new UserController();
+module.exports = new EmployeeController();

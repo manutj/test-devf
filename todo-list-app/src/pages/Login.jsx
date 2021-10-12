@@ -6,6 +6,7 @@ function Login(props) {
     // Estados para almacenar los datos introducidos en los input
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
+    const [role, setRole] = useState("");
     const dispatch = useAuthDispatch(); //Obtenemos el metodo de envio desde este hook personalizado
     const { loading, errorMessage } = useAuthState(); //Leemos los valores de carga y error desde el contexto
 
@@ -14,67 +15,98 @@ function Login(props) {
         e.preventDefault();
 
         try {
-            let response = await loginUser(dispatch, { password, email }); //La accion de login user hace la peticion mediante el metodo de envio que le dice el dispatch, envia en un objeto los datos de inicio de sesion y maneja los cambios de estado
-            console.log("RESPUESTA!!", response);
-            if (!response.role) return; //Verifica si existe la propiedad role del usuario
-            props.history.push("/tickets"); //Si es asi, Navegamos al dashboard
+            let response = await loginUser(dispatch, { email, password, role }); //La accion de login user hace la peticion mediante el metodo de envio que le dice el dispatch, envia en un objeto los datos de inicio de sesion y maneja los cambios de estado
+            response.token ? alert("Logged") : alert("Fail credentials");
+            role == "admin"
+                ? props.history.push("/staff")
+                : props.history.push(
+                      `/staff-tickets/${response.employeeId}/${role}`
+                  );
         } catch (error) {
-            console.log(error);
+            alert("Credenciales no validas");
         }
     };
     return (
-        <div>
+        <div className="loginBox">
+            <h1>Iniciar sesion</h1>
             <div>
-                <h1 style={{ textAlign: "center" }}>Login</h1>
-                <form>
-                    <div>
-                        <div>
-                            <Form>
-                                <FormGroup style={{ marginBottom: "15px" }}>
-                                    <Label for="email">Username</Label>
-                                    <Input
-                                        type="text"
-                                        id="email"
-                                        value={email}
-                                        onChange={(e) =>
-                                            setEmail(e.target.value)
-                                        }
-                                        disabled={loading}
-                                    />
-                                </FormGroup>
-                                <Label for="password">Password</Label>
-                                <FormGroup>
-                                    <Input
-                                        type="password"
-                                        id="password"
-                                        value={password}
-                                        onChange={(e) =>
-                                            setPassword(e.target.value)
-                                        }
-                                        disabled={loading}
-                                    />
-                                </FormGroup>
-                            </Form>
-                        </div>
-                    </div>
+                <div>
+                    <Form>
+                        <FormGroup style={{ marginBottom: "15px" }}>
+                            <Input
+                                type="text"
+                                id="email"
+                                name="email"
+                                value={email}
+                                placeholder="Correo"
+                                onChange={(e) => setEmail(e.target.value)}
+                                disabled={loading}
+                            />
+                        </FormGroup>
 
-                    <div
-                        style={{
-                            display: "flex",
-                            justifyContent: "center",
-                        }}
-                    >
-                        <Button
+                        <FormGroup>
+                            <Input
+                                type="password"
+                                id="password"
+                                name="password"
+                                value={password}
+                                placeholder="Contraseña"
+                                onChange={(e) => setPassword(e.target.value)}
+                                disabled={loading}
+                            />
+                        </FormGroup>
+                        <FormGroup
+                            check
                             style={{
                                 marginTop: "10px",
                             }}
-                            onClick={handleLogin}
-                            disabled={loading}
                         >
-                            Ingresar
-                        </Button>
-                    </div>
-                </form>
+                            <Label check>
+                                <Input
+                                    type="radio"
+                                    id="admin"
+                                    name="radio1"
+                                    disabled={loading}
+                                    value="admin"
+                                    onChange={(e) => setRole(e.target.value)}
+                                />{" "}
+                                Administrador
+                            </Label>
+                        </FormGroup>
+                        <FormGroup check>
+                            <Label check>
+                                <Input
+                                    type="radio"
+                                    id="employee"
+                                    name="radio1"
+                                    value="employee"
+                                    disabled={loading}
+                                    onChange={(e) => {
+                                        setRole(e.target.value);
+                                    }}
+                                />{" "}
+                                Empleado
+                            </Label>
+                        </FormGroup>
+                    </Form>
+                </div>
+            </div>
+
+            <div
+                style={{
+                    display: "flex",
+                    justifyContent: "center",
+                }}
+            >
+                <Button
+                    style={{
+                        marginTop: "10px",
+                    }}
+                    onClick={handleLogin}
+                    disabled={loading}
+                >
+                    Ingresar
+                </Button>
             </div>
         </div>
     );

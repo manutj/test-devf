@@ -2,33 +2,29 @@ const TicketDAO = require("../dao/tickets");
 
 class TicketService {
     createTicket(ticketDta) {
-        const { description, userticket_id } = ticketDta;
+        const { description, employee_id, manager_id } = ticketDta;
 
-        return TicketDAO.createTicket(description, userticket_id);
+        return TicketDAO.createTicket(description, employee_id, manager_id);
     }
 
     findTickets() {
         return TicketDAO.findTickets();
     }
 
-    findUserTickets() {
-        return TicketDAO.findUserTickets();
+    async dashboardTickets() {
+        return TicketDAO.dashboardTickets();
+    }
+
+    findUserTickets(id) {
+        return TicketDAO.findUserTickets(id);
     }
 
     findOneTicket(id) {
         return TicketDAO.findOneTicket(id);
     }
 
-    updateTicket(ticketDta, id, active) {
-        const { description, status, userticket_id } = ticketDta;
-        const { is_active } = active;
-        return TicketDAO.updateTicket(
-            description,
-            status,
-            userticket_id,
-            id,
-            is_active
-        );
+    updateTicket(description, status, id) {
+        return TicketDAO.updateTicket(description, status, id);
     }
 }
 

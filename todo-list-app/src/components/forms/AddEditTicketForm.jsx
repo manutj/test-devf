@@ -2,57 +2,55 @@ import React, { useState, useEffect } from "react";
 import { Button, Form, FormGroup, Input, Label } from "reactstrap";
 
 const AddEditTicketForm = (props) => {
-    const [items, setItems] = useState([]);
-    const [valueSelect, setValueSelect] = useState();
-    useEffect(() => {
-        fetch("http://localhost:3000/users/all-users")
-            .then((response) => response.json())
-            .then((items) => setItems(items))
-
-            .catch((err) => console.log(err));
-        if (props.item) {
-            const { ticket_id, description, status } = props.item;
-            setForm({ ticket_id, description, status });
-        }
-    }, []);
-
-    console.log(valueSelect);
-
-    const handleSelect = (e) => {
-        console.log("Fruit Selected!!");
-        setValueSelect(e.target.value);
-    };
-
+    const { ticket_id, description, status } = props.item;
+    const [valueSelect, setValueSelect] = useState("");
     const [form, setForm] = useState({
+        ticket_id: "",
         description: "",
         status: "",
     });
+    const [items, setItems] = useState([
+        { id: 1, state: "Abierto" },
+        { id: 2, state: "En proceso" },
+        { id: 3, state: "Cerrado" },
+    ]);
 
-    const onChange = (e) => {
+    useEffect(() => {
+        setForm({ ticket_id, description, status });
+    }, []);
+
+    const handleSelect = (e) => {
+        setValueSelect(e.target.value);
         setForm({
-            ...form,
+            ...form.status,
             [e.target.name]: e.target.value,
         });
     };
 
-    const users = items.map((item) =>
-        item.is_active == false ? null : (
-            <option onChange={handleSelect} value={item.user_id}>
-                {item.name}
-            </option>
-        )
-    );
+    const onChangeDescription = (e) => {
+        setForm({
+            ...form.description,
+            [e.target.name]: e.target.value,
+        });
+    };
+
+    const states = items.map((item) => (
+        <option key={item.id} onChange={handleSelect} value={item.state}>
+            {item.state}
+        </option>
+    ));
 
     const submitFormAdd = (e) => {
         e.preventDefault();
-        fetch("http://localhost:3000/tickets/new-ticket", {
-            method: "post",
+        fetch("http://localhost:3000/api/dashboard/new-ticket", {
+            method: "POST",
             headers: {
                 "Content-Type": "application/json",
             },
             body: JSON.stringify({
                 description: form.description,
-                userticket_id: valueSelect,
+                employee_id: props.employeeId,
+                manager_id: props.adminId,
             }),
         })
             .then((response) => response.json())
@@ -61,73 +59,92 @@ const AddEditTicketForm = (props) => {
 
     const submitFormEdit = (e) => {
         e.preventDefault();
-        fetch("http://localhost:3000/update-ticket/", {
-            method: "patch",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-                description: form.description,
-                status: form.status,
-                userticket_id: valueSelect,
-            }),
-        })
-            .then((response) => response.json())
-            .then((item) => {
-                if (Array.isArray(item)) {
-                    // console.log(item[0])
-                    this.props.updateState(item[0]);
-                    this.props.toggle();
-                } else {
-                    console.log("failure");
-                }
-            })
-            .catch((err) => console.log(err));
+        props.label == "Editar"
+            ? fetch(
+                  `http://localhost:3000/api/dashboard/update-ticket/${ticket_id}`,
+                  {
+                      method: "PATCH",
+                      headers: {
+                          "Content-Type": "application/json",
+                      },
+                      body: JSON.stringify({
+                          description: form.description,
+                      }),
+                  }
+              )
+                  .then((response) => response.json())
+                  .catch((err) => console.log(err))
+            : props.label == "Configurar"
+            ? fetch(
+                  `http://localhost:3000/api/dashboard/change-ticket-status/${ticket_id}`,
+                  {
+                      method: "PATCH",
+                      headers: {
+                          "Content-Type": "application/json",
+                      },
+                      body: JSON.stringify({
+                          status: form.status,
+                      }),
+                  }
+              )
+                  .then((response) => response.json())
+                  .catch((err) => console.log(err))
+            : fetch(
+                  `http://localhost:3000/api/dashboard/delete-ticket/${ticket_id}`,
+                  {
+                      method: "DELETE",
+                      headers: {
+                          "Content-Type": "application/json",
+                      },
+                  }
+              )
+                  .then((response) => response.json())
+                  .catch((err) => console.log(err));
     };
 
     return (
         <div>
-            <Form onSubmit={props.item ? submitFormEdit : submitFormAdd}>
-                <FormGroup style={{ marginBottom: "10px" }}>
-                    <Label for={"description"}>Descripcion</Label>
-                    <Input
-                        value={
-                            form.description === null ? " " : form.description
-                        }
-                        onChange={onChange}
-                        type={"text"}
-                        id={"description"}
-                        name={"description"}
-                    />
-                </FormGroup>
-                {form.status === "" ? (
-                    <></>
-                ) : (
-                    <FormGroup>
-                        <Label for={"status"}>Estado</Label>
+            <Form onSubmit={ticket_id == null ? submitFormAdd : submitFormEdit}>
+                {props.label == "Editar" || props.label == "Agregar ticket" ? (
+                    <FormGroup style={{ marginBottom: "10px" }}>
+                        <Label for={"description"}>Descripcion</Label>
                         <Input
-                            value={form.status}
-                            onChange={onChange}
+                            value={
+                                form.description === null
+                                    ? " "
+                                    : form.description
+                            }
+                            onChange={onChangeDescription}
                             type={"text"}
-                            id={"status"}
-                            name={"status"}
+                            id={"description"}
+                            name={"description"}
                         />
                     </FormGroup>
+                ) : props.label == "Configurar" ? (
+                    <FormGroup style={{ marginTop: "10px" }}>
+                        <Input
+                            defaultValue={"Abierto"}
+                            value={valueSelect}
+                            onChange={handleSelect}
+                            type="select"
+                            name="status"
+                            id="status"
+                        >
+                            {states}
+                        </Input>
+                    </FormGroup>
+                ) : (
+                    <p>Estas seguro de eliminar el ticket?</p>
                 )}
-
-                <FormGroup style={{ marginTop: "10px" }}>
-                    <Label for="userSelect">Usuario</Label>
-                    <Input
-                        value={valueSelect}
-                        onChange={handleSelect}
-                        type="select"
-                        name="select"
-                        id="userSelect"
-                    >
-                        {users}
-                    </Input>
-                </FormGroup>
-                <Button style={{ marginTop: "15px" }}>Guardar</Button>
+                {props.label == "Editar" ||
+                props.label == "Configurar" ||
+                props.label == "Agregar ticket" ? (
+                    <Button style={{ marginTop: "15px" }}>Guardar</Button>
+                ) : (
+                    <Button style={{ marginTop: "15px" }}>
+                        Eliminar definitivamente
+                    </Button>
+                )}
             </Form>
         </div>
     );

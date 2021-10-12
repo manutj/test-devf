@@ -1,15 +1,19 @@
 import React, { useState, useEffect } from "react";
 import { Container, Row, Col } from "reactstrap";
-import UsersModal from "../components/modal/UsersModal";
-import UsersDataTable from "../components/tables/UsersDataTable";
+import TicketModal from "../components/modal/TicketModal";
+import TicketsDataTable from "../components/tables/TicketsDataTable";
 
-const Users = () => {
+const DashboardAdmin = () => {
+    let user = localStorage.getItem("currentUser")
+        ? JSON.parse(localStorage.getItem("currentUser")).managerId
+        : "";
     const [items, setItems] = useState([]);
 
     const getItems = () => {
-        fetch("http://localhost:3000/users/all-users")
+        fetch("http://localhost:3000/api/dashboard")
             .then((response) => response.json())
             .then((items) => setItems(items))
+
             .catch((err) => console.log(err));
     };
 
@@ -20,21 +24,16 @@ const Users = () => {
         <Container className="App">
             <Row>
                 <Col>
-                    <h1>USUARIOS</h1>
+                    <h1>EQUIPO DE ATENCION AL CLIENTE</h1>
                 </Col>
             </Row>
             <Row>
                 <Col>
-                    <UsersDataTable items={items} />
-                </Col>
-            </Row>
-            <Row>
-                <Col>
-                    <UsersModal buttonLabel={"Nuevo usuario"} />
+                    <TicketsDataTable adminId={user} items={items} />
                 </Col>
             </Row>
         </Container>
     );
 };
 
-export default Users;
+export default DashboardAdmin;

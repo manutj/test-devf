@@ -12,7 +12,9 @@ const AppRoutes = ({ component: Component, path, isPrivate, ...rest }) => {
         <Route
             path={path}
             render={(props) =>
-                isPrivate && !Boolean(userDetails.token) ? ( //SI LA RUTA ES PRIVADA Y EL USUARIO NO TIENE AUTENTICACION, REDIRIJE HACIA EL LOGIN, SINO MUESTRA EL COMPONENTE PRIVADO
+                path == "/" ? (
+                    <Redirect to="/signup" />
+                ) : isPrivate && !Boolean(userDetails.token) ? ( //SI LA RUTA ES PRIVADA Y EL USUARIO NO TIENE AUTENTICACION, REDIRIJE HACIA EL LOGIN, SINO MUESTRA EL COMPONENTE PRIVADO
                     <Redirect to="/login" />
                 ) : (
                     <Component {...props} />

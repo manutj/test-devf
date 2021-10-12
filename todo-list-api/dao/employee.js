@@ -1,15 +1,15 @@
 const db = require("../db/db");
 
 class UserDAO {
-    async createUser(name, email) {
-        const [id] = await db("users")
+    async createUser(name, email, password, role) {
+        const [id] = await db(role == "admin" ? "manager" : "employee")
             .insert({
                 name,
                 email,
+                password,
                 is_active: true,
             })
-
-            .returning("user_id");
+            .returning(role == "admin" ? "manager_id" : "employee_id");
         return id;
     }
 
@@ -18,12 +18,12 @@ class UserDAO {
         return items;
     }
 
-    async findOneUser(id) {
+    async findOneEmployee(email, role) {
         const [item] = await db
             .select("*")
-            .from("users")
-            .where("user_id", id)
-            .returning("user_id");
+            .from(role == "admin" ? "manager" : "employee")
+            .where("email", email)
+            .returning(role == "admin" ? "manager_id" : "employee_id");
         return item;
     }
 
